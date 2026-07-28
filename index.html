@@ -121,7 +121,7 @@
     const escapeHtml = value => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const copyState = value => JSON.parse(JSON.stringify(value));
     let state = copyState(defaultState);
-    let supabase = null;
+    let supabaseClient = null;
 
     try { const local = localStorage.getItem('finance-compass-state'); if (local) state = JSON.parse(local); } catch (_) {}
     if (!Array.isArray(state.plans)) state.plans = [];
@@ -164,23 +164,23 @@
 
     async function save() {
       localStorage.setItem('finance-compass-state', JSON.stringify(state));
-      if (!supabase) return;
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!supabaseClient) return;
+      const { data: { user } } = await supabaseClient.auth.getUser();
       if (!user) return;
-      const { error } = await supabase.from('finance_states').upsert({ user_id: user.id, state, updated_at: new Date().toISOString() });
+      const { error } = await supabaseClient.from('finance_states').upsert({ user_id: user.id, state, updated_at: new Date().toISOString() });
       if (error) $('auth-status').textContent = 'Sync issue: ' + error.message;
     }
 
     async function updateAuthUi() {
-      if (!supabase) { $('config-notice').classList.remove('hidden'); return; }
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!supabaseClient) { $('config-notice').classList.remove('hidden'); return; }
+      const { data: { user } } = await supabaseClient.auth.getUser();
       const signedIn = Boolean(user); $('signed-out').classList.toggle('hidden', signedIn); $('signed-in').classList.toggle('hidden', !signedIn);
       $('auth-status').textContent = signedIn ? `${user.email} · synced` : 'Not signed in — saved on this device';
       if (signedIn) await loadCloudState(user);
     }
 
     async function loadCloudState(user) {
-      const { data, error } = await supabase.from('finance_states').select('state').eq('user_id', user.id).maybeSingle();
+      const { data, error } = await supabaseClient.from('finance_states').select('state').eq('user_id', user.id).maybeSingle();
       if (error) { $('auth-status').textContent = 'Could not load cloud data'; return; }
       if (data && data.state) { state = data.state; if (!Array.isArray(state.plans)) state.plans = []; if (!state.goal) state.goal = copyState(defaultState.goal); render(); }
       else await save();
@@ -188,8 +188,8 @@
 
     function enableSupabase() {
       if (SUPABASE_PUBLISHABLE_KEY === 'PASTE_YOUR_PUBLISHABLE_KEY_HERE') return;
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-      supabase.auth.onAuthStateChange((_event, session) => { if (session) updateAuthUi(); });
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      supabaseClient.auth.onAuthStateChange((_event, session) => { if (session) updateAuthUi(); });
     }
 
     $('tx-type').addEventListener('change', () => { const saving = $('tx-type').value === 'saving'; $('saving-options').classList.toggle('show', saving); $('saving-purpose').required = saving; });
@@ -204,8 +204,8 @@
     });
     $('goal-add').addEventListener('click', () => { if (!state.goal.done && state.savings >= 5000) { state.savings -= 5000; state.goal.amount += 5000; save(); render(); } });
     $('goal-done').addEventListener('click', () => { state.goal.done = true; save(); render(); });
-    $('sign-in').addEventListener('click', async () => { const email = $('auth-email').value.trim(); if (!email) { $('auth-status').textContent = 'Enter your email first'; return; } if (!supabase) return; const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } }); $('auth-status').textContent = error ? error.message : 'Check your email for the secure sign-in link'; });
-    $('sign-out').addEventListener('click', async () => { if (supabase) await supabase.auth.signOut(); updateAuthUi(); });
+    $('sign-in').addEventListener('click', async () => { const email = $('auth-email').value.trim(); if (!email) { $('auth-status').textContent = 'Enter your email first'; return; } if (!supabaseClient) { $('auth-status').textContent = 'Supabase is not configured'; return; } const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } }); $('auth-status').textContent = error ? error.message : 'Check your email for the secure sign-in link'; });
+    $('sign-out').addEventListener('click', async () => { if (supabaseClient) await supabaseClient.auth.signOut(); updateAuthUi(); });
 
     enableSupabase(); render(); updateAuthUi();
   </script>
