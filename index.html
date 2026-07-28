@@ -1,1300 +1,213 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Finance Compass</title>
-<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123629">
+  <title>Finance Compass</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { --ink:#13211c; --muted:#65736d; --line:#dce4df; --paper:#f6f8f5; --card:#fff; --forest:#123629; --mint:#dff3e8; --soft:#edf2ee; --red:#b34134; --gold:#a66b08; --radius:18px; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button, input, select { font:inherit; } button { cursor:pointer; } .app { max-width:1180px; margin:auto; padding:28px 20px 48px; }
+    .topbar { display:flex; justify-content:space-between; gap:18px; align-items:center; margin-bottom:26px; } .brand { display:flex; align-items:center; gap:11px; font-size:20px; font-weight:750; letter-spacing:-.02em; }
+    .brand-mark { display:grid; place-items:center; width:39px; height:39px; color:#fff; background:var(--forest); border-radius:13px; font-size:20px; }
+    .month { color:var(--muted); font-size:14px; }.card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; box-shadow:0 1px 1px rgba(19,33,28,.02); }
+    .stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:18px; }.stat-label, .eyebrow { color:var(--muted); font-size:13px; }.stat-value { display:block; margin:7px 0 2px; font-size:27px; line-height:1; letter-spacing:-.045em; }.positive { color:var(--forest); }
+    .dashboard { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(310px,.75fr); gap:18px; }.column { display:grid; gap:18px; align-content:start; }.card-title { display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:16px; }.card-title h2 { margin:0; font-size:16px; letter-spacing:-.01em; }.chart { height:210px; display:flex; align-items:end; gap:9px; padding-top:10px; border-bottom:1px solid var(--line); }.bar-col { flex:1; height:100%; display:flex; flex-direction:column; justify-content:end; gap:7px; text-align:center; font-size:11px; color:var(--muted); }.bar { min-height:6px; background:var(--forest); border-radius:7px 7px 2px 2px; opacity:.9; }.chart-total { font-size:12px; color:var(--muted); margin-top:10px; }
+    .activity { display:grid; }.activity-row { display:flex; justify-content:space-between; gap:14px; align-items:center; padding:13px 0; border-top:1px solid var(--line); }.activity-row:first-child { border-top:0; padding-top:0; }.activity-name { display:block; font-weight:650; }.activity-meta { display:block; color:var(--muted); font-size:13px; }.amount { font-weight:700; white-space:nowrap; }.income { color:var(--forest); }.out { color:var(--red); }
+    .auth { background:var(--mint); border-color:#c9e8d5; }.auth-body { display:flex; align-items:end; gap:10px; flex-wrap:wrap; }.field { display:grid; gap:6px; flex:1 1 180px; }.field label { font-size:13px; font-weight:650; }.input, .select { width:100%; min-height:41px; border:1px solid #c8d2cc; background:#fff; border-radius:10px; padding:0 11px; color:var(--ink); }.button { min-height:41px; border:0; border-radius:10px; padding:0 14px; font-weight:700; }.button.primary { color:#fff; background:var(--forest); }.button.secondary { color:var(--forest); background:#fff; border:1px solid #bcd7c6; }.button.ghost { color:var(--muted); background:transparent; padding:0; min-height:auto; }.status { font-size:13px; color:var(--muted); }
+    .plan-group { display:grid; gap:9px; }.plan-row { padding:12px 0; border-top:1px solid var(--line); }.plan-row:first-child { border-top:0; padding-top:0; }.plan-head, .plan-meta { display:flex; justify-content:space-between; gap:12px; }.plan-name { font-weight:650; }.pill { font-size:12px; color:#345546; background:var(--mint); border-radius:999px; padding:3px 8px; white-space:nowrap; }.plan-meta { margin-top:4px; color:var(--muted); font-size:13px; }
+    .goal-progress { margin:12px 0 7px; height:9px; overflow:hidden; border-radius:99px; background:var(--soft); }.goal-progress span { display:block; height:100%; background:var(--forest); border-radius:inherit; transition:width .25s ease; }.goal-footer { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }.goal-actions { display:flex; gap:9px; margin-top:15px; }
+    .form-card { margin-top:18px; }.form-grid { display:grid; grid-template-columns:1.3fr .75fr .8fr 1fr auto; gap:10px; align-items:end; }.saving-options { display:none; grid-column:1 / -1; grid-template-columns:repeat(3, 1fr); gap:10px; padding-top:3px; }.saving-options.show { display:grid; }.form-note { color:var(--muted); font-size:13px; margin:0; }
+    .empty { color:var(--muted); font-size:14px; padding:4px 0; }.notice { margin-top:10px; font-size:13px; color:var(--gold); }.hidden { display:none !important; }
+    @media (max-width:850px) { .dashboard { grid-template-columns:1fr; } }.topbar { align-items:flex-start; } @media (max-width:620px) { .app { padding:20px 14px 34px; }.stats { grid-template-columns:1fr; }.form-grid, .saving-options { grid-template-columns:1fr 1fr; }.form-grid .button { grid-column:1 / -1; }.saving-options { grid-column:1 / -1; }.stat-value { font-size:25px; } } @media (max-width:390px) { .form-grid, .saving-options { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
-<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Finance Compass" srcdoc="&lt;!doctype html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-&lt;meta charset=&quot;utf-8&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
-&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
-&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
-&lt;title&gt;Finance Compass&lt;/title&gt;
-&lt;style&gt;:root {
-  color-scheme: light dark;
-  background-color: var(
-    --background,
-    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
-  ) !important;
-
-  /* Agent-facing contract; keep in sync with SKILL.md. */
-  --background: var(
-    --color-background-primary,
-    light-dark(rgb(255 255 255), rgb(24 24 24))
-  );
-  --foreground: var(
-    --color-text-primary,
-    light-dark(rgb(26 28 31), rgb(255 255 255))
-  );
-  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
-  --card-foreground: var(
-    --color-text-primary,
-    light-dark(rgb(26 28 31), rgb(255 255 255))
-  );
-  --popover: var(
-    --color-background-secondary,
-    light-dark(rgb(255 255 255), rgb(45 45 45))
-  );
-  --popover-foreground: var(
-    --color-text-primary,
-    light-dark(rgb(26 28 31), rgb(255 255 255))
-  );
-  --primary: var(
-    --color-text-info,
-    light-dark(rgb(51 156 255), rgb(131 195 255))
-  );
-  --primary-foreground: var(
-    --color-text-inverse,
-    light-dark(rgb(255 255 255), rgb(13 13 13))
-  );
-  --secondary: var(
-    --color-background-secondary,
-    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
-  );
-  --secondary-foreground: var(
-    --color-text-primary,
-    light-dark(rgb(26 28 31), rgb(255 255 255))
-  );
-  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
-  --muted-foreground: var(
-    --color-text-secondary,
-    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
-  );
-  --accent: var(
-    --color-background-info,
-    light-dark(rgb(229 242 255), rgb(13 39 63))
-  );
-  --accent-foreground: var(
-    --color-text-info,
-    light-dark(rgb(51 156 255), rgb(131 195 255))
-  );
-  --destructive: var(
-    --color-text-warning,
-    light-dark(rgb(226 85 7), rgb(255 133 73))
-  );
-  --border: var(
-    --color-border-secondary,
-    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
-  );
-  --input: var(
-    --color-border-primary,
-    light-dark(
-      rgb(26 28 31 / 11.8%),
-      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
-    )
-  );
-  --ring: var(
-    --color-ring-primary,
-    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
-  );
-  --font-size-base: var(--font-text-md-size, 14px);
-  --red: light-dark(rgb(186 38 35), rgb(250 66 62));
-  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
-  --viz-series-1: var(--primary);
-  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
-  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
-  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
-  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
-  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
-
-  /* Internal implementation variables; not part of the agent contract. */
-  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
-    monospace;
-  --font-size-normal: max(11px, var(--font-size-base));
-  --font-size-tooltip: calc(var(--font-size-base) - 1px);
-  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
-  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
-  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
-  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
-  --font-weight-normal: 430;
-  --font-weight-medium: 500;
-  --line-height-normal: calc(var(--font-size-normal) * 1.5);
-  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
-  --line-height-small: calc(var(--font-size-small) + 4px);
-  --radius: var(--border-radius-lg, 12.5px);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-2xl: calc(var(--radius) * 1.6);
-  --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
-  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
-
-  /* Legacy aliases; not part of the current agent contract. */
-  --viz-bg: transparent;
-  --viz-panel: var(--card);
-  --viz-border: var(--border);
-  --viz-text: var(--foreground);
-  --viz-muted: var(--muted-foreground);
-  --viz-accent: var(--primary);
-  --viz-accent-text: var(--primary-foreground);
-  --viz-accent-bg: var(--accent);
-  --viz-font-size: var(--font-size-base);
-  --viz-warning: var(--destructive);
-}
-
-:root[data-theme=&quot;light&quot;] {
-  color-scheme: light;
-}
-
-:root[data-theme=&quot;dark&quot;] {
-  color-scheme: dark;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html &gt; body {
-  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
-  --color-background-primary: var(
-    --background,
-    light-dark(rgb(255 255 255), rgb(24 24 24))
-  );
-  --color-text-primary: var(
-    --foreground,
-    light-dark(rgb(26 28 31), rgb(255 255 255))
-  );
-  --color-border-secondary: var(
-    --border,
-    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
-  );
-
-  margin: 0;
-  padding: 5px;
-  color: var(--foreground);
-  background: transparent !important;
-  font-family: var(--font-sans);
-  font-size: var(--font-size-normal);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-
-a {
-  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium, 500);
-  text-decoration: none;
-  text-underline-offset: 2px;
-}
-
-a:is(:hover, :focus-visible) {
-  text-decoration-line: underline;
-  text-decoration-style: dashed;
-  text-decoration-thickness: 0.5px;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-  margin-block: 0;
-}
-
-h1 {
-  font-size: var(--font-size-h1);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-}
-
-h2 {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-}
-
-h3,
-h4,
-h5,
-h6 {
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.3;
-}
-
-b,
-strong,
-th {
-  font-weight: var(--font-weight-medium);
-}
-
-code:not(pre code) {
-  display: inline;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  corner-shape: superellipse(1.5);
-  background: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 0.92em;
-  overflow-wrap: anywhere;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  word-break: break-word;
-}
-
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  color: var(--foreground);
-  font: inherit;
-  text-align: start;
-}
-
-.table :is(th, td) {
-  padding-block: 10px;
-  padding-inline: 0 24px;
-  overflow-wrap: anywhere;
-  border-bottom: 1px solid var(--border);
-  text-align: start;
-  vertical-align: top;
-}
-
-.table-responsive &gt; .table :is(th, td) {
-  overflow-wrap: break-word;
-}
-
-.table :is(th, td):last-child {
-  padding-inline-end: 0;
-}
-
-.table :is(caption, thead th) {
-  font-weight: 600;
-}
-
-.table thead th {
-  padding-block: 8px;
-  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
-}
-
-.table tbody tr:last-child :is(th, td) {
-  border-bottom: 0;
-}
-
-.table.table-sm :is(th, td) {
-  padding-block: 6px;
-}
-
-.table.table-sm :is(th, td):not(:last-child) {
-  padding-inline-end: 16px;
-}
-
-.table :is(.text-end, [align=&quot;right&quot;]) {
-  text-align: end;
-  font-variant-numeric: tabular-nums;
-}
-
-.table :is(.text-center, [align=&quot;center&quot;]) {
-  text-align: center;
-}
-
-.table .text-nowrap {
-  white-space: nowrap;
-}
-
-#widget {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  padding: 0;
-  background: transparent !important;
-}
-
-.card {
-  min-width: 0;
-  padding: 12px;
-  overflow: hidden;
-  overflow-wrap: break-word;
-  border-radius: var(--radius-2xl);
-  corner-shape: superellipse(1.5);
-  color: var(--card-foreground);
-  background: var(--card);
-}
-
-#widget &gt; :not(.card) {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.tooltip {
-  position: fixed;
-  z-index: 50;
-  top: 0;
-  left: 0;
-  width: max-content;
-  max-width: min(
-    20rem,
-    var(--tooltip-available-width, calc(100vw - 10px)),
-    calc(100vw - 10px)
-  );
-  max-height: min(
-    var(--tooltip-available-height, calc(100vh - 10px)),
-    calc(100vh - 10px)
-  );
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  corner-shape: superellipse(1.5);
-  color: var(--popover-foreground);
-  background: var(--popover);
-  box-shadow: none;
-  font-size: var(--font-size-tooltip);
-  line-height: var(--line-height-tooltip);
-  overflow-wrap: break-word;
-  white-space: normal;
-  pointer-events: none;
-  user-select: none;
-}
-
-.viz-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
-  gap: 10px;
-}
-
-.viz-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.viz-stat-value {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-}
-
-.viz-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-
-.viz-badge {
-  padding: 3px 8px;
-  border-radius: var(--radius-full);
-  color: var(--accent-foreground);
-  background: var(--accent);
-  font-weight: var(--font-weight-medium);
-}
-
-small,
-.text-small,
-.viz-badge {
-  font-size: var(--font-size-small);
-  line-height: var(--line-height-small);
-}
-
-.text-muted {
-  color: var(--muted-foreground);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.viz-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.viz-controls &gt; .form-label {
-  display: grid;
-  min-width: min(100%, 260px);
-  flex: 1 1 280px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 2px 12px;
-  margin-bottom: 0;
-}
-
-.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
-  grid-column: 1 / -1;
-}
-
-.btn,
-.form-check-input,
-.form-control,
-.form-range,
-.form-select {
-  font: inherit;
-}
-
-.btn {
-  appearance: button;
-  display: inline-flex;
-  inline-size: fit-content;
-  max-inline-size: 100%;
-  min-height: 28px;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin: 0;
-  padding: 0 8px;
-  -webkit-app-region: no-drag;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-lg);
-  corner-shape: superellipse(1.5);
-  color: var(--secondary-foreground);
-  background: var(--secondary);
-  cursor: var(--cursor-interaction, pointer);
-  text-align: center;
-  text-decoration: none;
-  white-space: nowrap;
-  user-select: none;
-  -webkit-font-smoothing: antialiased;
-}
-
-.btn:is(.btn-block, .viz-tile) {
-  inline-size: 100%;
-}
-
-.btn.viz-tile {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-a.btn {
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.btn:not(:disabled):hover {
-  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.btn-primary {
-  border-color: transparent;
-  color: var(--primary-foreground);
-  background: var(--foreground);
-  background-clip: padding-box;
-}
-
-.btn-primary .text-muted {
-  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
-}
-
-.btn-primary:not(:disabled):hover {
-  background: color-mix(in srgb, var(--foreground) 80%, transparent);
-  background-clip: padding-box;
-}
-
-.btn-ghost {
-  border-color: transparent;
-  color: var(--muted-foreground);
-  background: transparent;
-}
-
-.btn-ghost:not(:disabled):hover {
-  color: var(--foreground);
-  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-[data-lucide] {
-  stroke-width: 1.6;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--foreground);
-}
-
-.form-control {
-  display: block;
-  width: 100%;
-  min-height: 28px;
-  padding: 0 8px;
-  outline: none;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-lg);
-  corner-shape: superellipse(1.5);
-  color: var(--foreground);
-  background: var(--secondary);
-}
-
-.form-control::placeholder {
-  color: var(--muted-foreground);
-}
-
-.form-control[type=&quot;file&quot;] {
-  padding: 0;
-  overflow: hidden;
-  cursor: var(--cursor-interaction, pointer);
-}
-
-.form-control[type=&quot;file&quot;]::file-selector-button {
-  min-height: 26px;
-  margin-right: 8px;
-  padding: 0 8px;
-  border: 0;
-  border-right: 1px solid var(--input);
-  color: var(--secondary-foreground);
-  background: var(--secondary);
-  cursor: inherit;
-  font: inherit;
-}
-
-.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
-  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.form-control-color[type=&quot;color&quot;] {
-  width: 40px;
-  height: 28px;
-  padding: 3px;
-  cursor: var(--cursor-interaction, pointer);
-}
-
-.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
-  border: 0;
-  border-radius: calc(var(--radius-lg) - 4px);
-  corner-shape: superellipse(1.5);
-}
-
-textarea.form-control {
-  height: auto;
-  min-height: 72px;
-  padding: 8px 10px;
-  resize: vertical;
-}
-
-.form-control:focus-visible {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-control:disabled,
-.form-select:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-.form-select {
-  appearance: none;
-  display: block;
-  width: 100%;
-  min-height: 28px;
-  margin: 0;
-  padding: 0 32px 0 8px;
-  outline: none;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-lg);
-  corner-shape: superellipse(1.5);
-  color: var(--foreground);
-  background-color: var(--secondary);
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
-    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
-  background-position:
-    calc(100% - 14px) 50%,
-    calc(100% - 10px) 50%;
-  background-repeat: no-repeat;
-  background-size: 4px 4px;
-  cursor: var(--cursor-interaction, default);
-}
-
-.form-select:not(:disabled):hover {
-  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.form-select:focus-visible {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-check {
-  display: flex;
-  min-height: 20px;
-  align-items: center;
-  gap: 6px;
-}
-
-.form-check-input {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  flex: 0 0 auto;
-  margin: 0;
-  border: 1px solid var(--input);
-  color: var(--primary-foreground);
-  background-color: transparent;
-  cursor: var(--cursor-interaction, default);
-  transition:
-    background-color 150ms,
-    border-color 150ms,
-    box-shadow 150ms;
-}
-
-.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
-  border-color: var(--input);
-  border-radius: var(--radius-sm);
-  corner-shape: superellipse(1.5);
-  background-color: var(--secondary);
-  box-shadow: var(--shadow-sm);
-}
-
-.form-check:not(.form-switch)
-  .form-check-input:not(:disabled):not(:checked):hover {
-  background-color: var(--card);
-}
-
-.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
-  border-color: var(--primary);
-  background-color: var(--primary);
-}
-
-.form-check:not(.form-switch)
-  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--primary-foreground);
-  content: &quot;&quot;;
-  mask: var(--checkmark-image) center / 12px 12px no-repeat;
-}
-
-.form-check-input[type=&quot;radio&quot;] {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--radius-full);
-}
-
-.form-check-input[type=&quot;radio&quot;]:checked {
-  border: 2px solid var(--primary);
-  background:
-    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
-    var(--primary);
-}
-
-.form-check:not(.form-switch) .form-check-input:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-.form-check:not(.form-switch) .form-check-input:disabled {
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
-  cursor: not-allowed;
-}
-
-.form-switch .form-check-input:disabled,
-.form-switch .form-check-input:disabled + .form-check-label {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.form-check-label {
-  color: var(--foreground);
-  cursor: var(--cursor-interaction, default);
-}
-
-.form-switch .form-check-input {
-  position: relative;
-  width: 32px;
-  height: 20px;
-  border: 0;
-  border-radius: var(--radius-full);
-  background: var(--muted);
-  box-shadow: none;
-  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.form-switch .form-check-input::before {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 16px;
-  height: 16px;
-  box-sizing: border-box;
-  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
-  border-radius: var(--radius-full);
-  background: light-dark(var(--primary-foreground), var(--foreground));
-  box-shadow: var(--shadow-sm);
-  content: &quot;&quot;;
-  transform: translate(2px, -50%);
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.form-switch .form-check-input:checked {
-  background: var(--primary);
-}
-
-.form-switch .form-check-input:checked::before {
-  transform: translate(14px, -50%);
-}
-
-.form-switch .form-check-input:focus-visible {
-  box-shadow: 0 0 0 2px var(--ring);
-}
-
-.form-range {
-  appearance: none;
-  display: block;
-  width: 100%;
-  height: 28px;
-  flex: 1;
-  margin: 0;
-  padding: 0;
-  outline: none;
-  border: 0;
-  accent-color: var(--primary);
-  background: linear-gradient(
-      color-mix(in srgb, var(--foreground) 7%, transparent),
-      color-mix(in srgb, var(--foreground) 7%, transparent)
-    )
-    center / 100% 2px no-repeat;
-}
-
-.form-range::-webkit-slider-runnable-track {
-  height: 28px;
-  background: transparent;
-}
-
-.form-range::-webkit-slider-thumb {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  margin-top: 4px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  background: light-dark(var(--primary-foreground), var(--foreground));
-}
-
-.form-range:focus-visible::-webkit-slider-thumb {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-range::-moz-range-track {
-  height: 28px;
-  background: transparent;
-}
-
-.form-range::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  background: light-dark(var(--primary-foreground), var(--foreground));
-}
-
-.form-range:focus-visible::-moz-range-thumb {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-range:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-.btn:not(.btn-primary, .viz-tile):is(
-    [aria-pressed=&quot;true&quot;],
-    [aria-selected=&quot;true&quot;],
-    .is-selected
-  ) {
-  border-color: var(--primary);
-  color: var(--primary-foreground);
-  background: var(--primary);
-}
-
-.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
-  border-color: var(--primary);
-  box-shadow: inset 0 0 0 1px var(--primary);
-}
-
-.btn:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-#widget &gt; svg {
-  width: 100%;
-}
-
-.text-warning,
-.text-destructive {
-  color: var(--destructive);
-}
-
-html&gt;body{padding:0}&lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;section id=&quot;finance-compass&quot; aria-label=&quot;Personal finance dashboard&quot;&gt;
-  &lt;style&gt;
-    #finance-compass { color: var(--foreground); font-family: inherit; }
-    #finance-compass .topline, #finance-compass .section-head, #finance-compass .ledger-row, #finance-compass .goal-line { display:flex; align-items:center; justify-content:space-between; gap: 12px; }
-    #finance-compass .topline { margin-bottom: 20px; flex-wrap:wrap; }
-    #finance-compass .brand { display:flex; gap:10px; align-items:center; font-weight:500; }
-    #finance-compass .brand-mark { display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:var(--primary); color:var(--primary-foreground); }
-    #finance-compass .month-switch { display:flex; gap:8px; align-items:center; }
-    #finance-compass .month-switch button { min-width:34px; }
-    #finance-compass .summary { margin-bottom: 22px; }
-    #finance-compass .summary .card { padding:16px; }
-    #finance-compass .viz-stat-value { display:block; margin:6px 0 2px; font-size:1.45em; font-weight:500; }
-    #finance-compass .dashboard-grid { display:grid; grid-template-columns: minmax(0,1.45fr) minmax(260px,.9fr); gap:20px; }
-    #finance-compass .stack { display:grid; gap:20px; }
-    #finance-compass .section-head { margin-bottom:12px; }
-    #finance-compass h2 { margin:0; font-size:1.05em; font-weight:500; }
-    #finance-compass .chart-wrap { position:relative; min-height:220px; }
-    #finance-compass .trend-chart { width:100%; height:220px; display:block; overflow:visible; }
-    #finance-compass .chart-label { fill:var(--muted-foreground); font-size:11px; }
-    #finance-compass .chart-line { fill:none; stroke:var(--viz-series-1); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
-    #finance-compass .chart-area { fill:var(--viz-series-1); opacity:.13; }
-    #finance-compass .chart-grid { stroke:var(--border); stroke-width:1; }
-    #finance-compass .chart-dot { fill:var(--card); stroke:var(--viz-series-1); stroke-width:3; }
-    #finance-compass .allocation { display:grid; gap:12px; }
-    #finance-compass .allocation-row { display:grid; grid-template-columns:86px 1fr 58px; align-items:center; gap:10px; }
-    #finance-compass .bar-track { height:8px; background:var(--muted); border-radius:999px; overflow:hidden; }
-    #finance-compass .bar { height:100%; background:var(--viz-series-1); border-radius:inherit; }
-    #finance-compass .allocation-row:nth-child(2) .bar { background:var(--viz-series-2); }
-    #finance-compass .allocation-row:nth-child(3) .bar { background:var(--viz-series-3); }
-    #finance-compass .allocation-row:nth-child(4) .bar { background:var(--viz-series-4); }
-    #finance-compass .ledger { display:grid; gap:2px; }
-    #finance-compass .ledger-row { padding:11px 2px; border-bottom:1px solid var(--border); }
-    #finance-compass .ledger-row:last-child { border-bottom:0; }
-    #finance-compass .transaction-name { display:block; font-weight:500; }
-    #finance-compass .amount { font-weight:500; white-space:nowrap; }
-    #finance-compass .out { color:var(--destructive); }
-    #finance-compass .in { color:var(--viz-series-1); }
-    #finance-compass .goal-card { padding:16px; }
-    #finance-compass .goal-line { margin-top:14px; }
-    #finance-compass .goal-progress { height:9px; background:var(--muted); border-radius:999px; overflow:hidden; margin:8px 0; }
-    #finance-compass .goal-progress &gt; span { display:block; height:100%; width:0; background:var(--viz-series-1); border-radius:inherit; transition:width .25s ease; }
-    #finance-compass .add-panel { margin-top:20px; }
-    #finance-compass .add-panel .card { padding:16px; }
-    #finance-compass .transaction-form { display:grid; grid-template-columns:1.3fr .7fr .8fr .9fr auto; gap:10px; align-items:end; }
-    #finance-compass .transaction-form label { display:grid; gap:5px; }
-    #finance-compass .saving-fields { display:none; grid-column:1 / -1; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
-    #finance-compass .saving-fields.is-visible { display:grid; }
-    #finance-compass .plan-list { display:grid; gap:10px; }
-    #finance-compass .plan-item { padding:10px 0; border-bottom:1px solid var(--border); }
-    #finance-compass .plan-item:last-child { border-bottom:0; padding-bottom:0; }
-    #finance-compass .plan-meta { display:flex; justify-content:space-between; gap:10px; margin-top:4px; }
-    #finance-compass .form-control, #finance-compass .form-select { width:100%; box-sizing:border-box; }
-    #finance-compass .empty { padding:16px 0; text-align:center; }
-    @media (max-width: 680px) { #finance-compass .dashboard-grid { grid-template-columns:1fr; } #finance-compass .transaction-form, #finance-compass .saving-fields { grid-template-columns:1fr 1fr; } #finance-compass .transaction-form button { grid-column:1 / -1; } }
-    @media (max-width: 400px) { #finance-compass .summary { grid-template-columns:1fr; } #finance-compass .transaction-form { grid-template-columns:1fr; } }
-  &lt;/style&gt;
-
-  &lt;div class=&quot;topline&quot;&gt;
-    &lt;div class=&quot;brand&quot;&gt;&lt;span class=&quot;brand-mark&quot;&gt;&lt;i data-lucide=&quot;wallet-cards&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/span&gt;&lt;span&gt;Finance Compass&lt;/span&gt;&lt;/div&gt;
-    &lt;div class=&quot;month-switch&quot; aria-label=&quot;Dashboard period&quot;&gt;&lt;button class=&quot;btn btn-ghost&quot; type=&quot;button&quot; aria-label=&quot;Previous month&quot;&gt;&lt;i data-lucide=&quot;chevron-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;&lt;span class=&quot;text-small&quot;&gt;July 2026&lt;/span&gt;&lt;button class=&quot;btn btn-ghost&quot; type=&quot;button&quot; aria-label=&quot;Next month&quot;&gt;&lt;i data-lucide=&quot;chevron-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;&lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;div class=&quot;viz-grid summary&quot; aria-label=&quot;Financial summary&quot;&gt;
-    &lt;div class=&quot;card viz-stat&quot;&gt;&lt;span class=&quot;text-muted&quot;&gt;Current savings&lt;/span&gt;&lt;strong class=&quot;viz-stat-value&quot; id=&quot;savings&quot;&gt;₹1,61,450&lt;/strong&gt;&lt;span class=&quot;text-small text-muted&quot; id=&quot;savings-note&quot;&gt;available across accounts&lt;/span&gt;&lt;/div&gt;
-    &lt;div class=&quot;card viz-stat&quot;&gt;&lt;span class=&quot;text-muted&quot;&gt;Spent this month&lt;/span&gt;&lt;strong class=&quot;viz-stat-value&quot; id=&quot;spent&quot;&gt;₹38,750&lt;/strong&gt;&lt;span class=&quot;text-small text-muted&quot; id=&quot;spent-note&quot;&gt;of ₹55,000 comfort limit&lt;/span&gt;&lt;/div&gt;
-    &lt;div class=&quot;card viz-stat&quot;&gt;&lt;span class=&quot;text-muted&quot;&gt;Invested this month&lt;/span&gt;&lt;strong class=&quot;viz-stat-value&quot; id=&quot;invested&quot;&gt;₹20,000&lt;/strong&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;SIP + long-term assets&lt;/span&gt;&lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;div class=&quot;dashboard-grid&quot;&gt;
-    &lt;div class=&quot;stack&quot;&gt;
-      &lt;section aria-labelledby=&quot;spend-trend-title&quot;&gt;
-        &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;spend-trend-title&quot;&gt;Daily spending&lt;/h2&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;This week&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;chart-wrap&quot; role=&quot;img&quot; aria-label=&quot;Daily spending from July 10 to 16, with a weekly total of 38,750 rupees&quot;&gt;
-          &lt;svg class=&quot;trend-chart&quot; viewBox=&quot;0 0 620 220&quot; preserveAspectRatio=&quot;none&quot;&gt;
-            &lt;line class=&quot;chart-grid&quot; x1=&quot;42&quot; y1=&quot;30&quot; x2=&quot;610&quot; y2=&quot;30&quot;&gt;&lt;/line&gt;&lt;line class=&quot;chart-grid&quot; x1=&quot;42&quot; y1=&quot;92&quot; x2=&quot;610&quot; y2=&quot;92&quot;&gt;&lt;/line&gt;&lt;line class=&quot;chart-grid&quot; x1=&quot;42&quot; y1=&quot;154&quot; x2=&quot;610&quot; y2=&quot;154&quot;&gt;&lt;/line&gt;
-            &lt;text class=&quot;chart-label&quot; x=&quot;0&quot; y=&quot;34&quot;&gt;₹12k&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;4&quot; y=&quot;96&quot;&gt;₹6k&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;15&quot; y=&quot;158&quot;&gt;₹0&lt;/text&gt;
-            &lt;path class=&quot;chart-area&quot; d=&quot;M46 144 L138 118 L230 133 L322 53 L414 126 L506 102 L598 136 L598 154 L46 154 Z&quot;&gt;&lt;/path&gt;
-            &lt;path class=&quot;chart-line&quot; d=&quot;M46 144 L138 118 L230 133 L322 53 L414 126 L506 102 L598 136&quot;&gt;&lt;/path&gt;
-            &lt;circle class=&quot;chart-dot&quot; cx=&quot;46&quot; cy=&quot;144&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;chart-dot&quot; cx=&quot;138&quot; cy=&quot;118&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;chart-dot&quot; cx=&quot;230&quot; cy=&quot;133&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;chart-dot&quot; cx=&quot;322&quot; cy=&quot;53&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;chart-dot&quot; cx=&quot;414&quot; cy=&quot;126&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;chart-dot&quot; cx=&quot;506&quot; cy=&quot;102&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;chart-dot&quot; cx=&quot;598&quot; cy=&quot;136&quot; r=&quot;4&quot;&gt;&lt;/circle&gt;
-            &lt;text class=&quot;chart-label&quot; x=&quot;40&quot; y=&quot;183&quot;&gt;10&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;132&quot; y=&quot;183&quot;&gt;11&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;224&quot; y=&quot;183&quot;&gt;12&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;316&quot; y=&quot;183&quot;&gt;13&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;408&quot; y=&quot;183&quot;&gt;14&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;500&quot; y=&quot;183&quot;&gt;15&lt;/text&gt;&lt;text class=&quot;chart-label&quot; x=&quot;592&quot; y=&quot;183&quot;&gt;16&lt;/text&gt;
-          &lt;/svg&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section aria-labelledby=&quot;recent-title&quot;&gt;
-        &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;recent-title&quot;&gt;Recent activity&lt;/h2&gt;&lt;span class=&quot;text-small text-muted&quot; id=&quot;activity-count&quot;&gt;4 entries&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;ledger&quot; id=&quot;ledger&quot;&gt;&lt;/div&gt;
-      &lt;/section&gt;
-    &lt;/div&gt;
-
-    &lt;aside class=&quot;stack&quot;&gt;
-      &lt;section aria-labelledby=&quot;allocation-title&quot;&gt;
-        &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;allocation-title&quot;&gt;Where your money went&lt;/h2&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;July&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;allocation&quot; aria-label=&quot;Expense allocation&quot;&gt;
-          &lt;div class=&quot;allocation-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;Home &amp; bills&lt;/span&gt;&lt;span class=&quot;bar-track&quot;&gt;&lt;span class=&quot;bar&quot; style=&quot;width:70%&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;text-small&quot;&gt;₹14,500&lt;/span&gt;&lt;/div&gt;
-          &lt;div class=&quot;allocation-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;Food &amp; coffee&lt;/span&gt;&lt;span class=&quot;bar-track&quot;&gt;&lt;span class=&quot;bar&quot; style=&quot;width:53%&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;text-small&quot;&gt;₹10,980&lt;/span&gt;&lt;/div&gt;
-          &lt;div class=&quot;allocation-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;Travel&lt;/span&gt;&lt;span class=&quot;bar-track&quot;&gt;&lt;span class=&quot;bar&quot; style=&quot;width:35%&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;text-small&quot;&gt;₹7,200&lt;/span&gt;&lt;/div&gt;
-          &lt;div class=&quot;allocation-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;Other&lt;/span&gt;&lt;span class=&quot;bar-track&quot;&gt;&lt;span class=&quot;bar&quot; style=&quot;width:29%&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;text-small&quot;&gt;₹6,070&lt;/span&gt;&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section class=&quot;card goal-card&quot; aria-labelledby=&quot;goal-title&quot;&gt;
-        &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;goal-title&quot;&gt;Short goal&lt;/h2&gt;&lt;span class=&quot;viz-badge&quot; id=&quot;goal-status&quot;&gt;On track&lt;/span&gt;&lt;/div&gt;
-        &lt;span class=&quot;transaction-name&quot;&gt;Laptop fund&lt;/span&gt;
-        &lt;div class=&quot;goal-progress&quot; aria-label=&quot;Laptop fund progress&quot;&gt;&lt;span id=&quot;goal-bar&quot;&gt;&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;goal-line&quot;&gt;&lt;span class=&quot;text-small&quot; id=&quot;goal-amount&quot;&gt;₹45,000 of ₹80,000&lt;/span&gt;&lt;span class=&quot;text-small text-muted&quot; id=&quot;goal-percent&quot;&gt;56%&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;goal-line&quot; style=&quot;margin-top:14px&quot;&gt;&lt;button class=&quot;btn&quot; id=&quot;contribute&quot; type=&quot;button&quot;&gt;Add ₹5,000&lt;/button&gt;&lt;button class=&quot;btn btn-ghost&quot; id=&quot;complete-goal&quot; type=&quot;button&quot;&gt;Mark done&lt;/button&gt;&lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section class=&quot;card goal-card&quot; aria-labelledby=&quot;short-plans-title&quot;&gt;
-        &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;short-plans-title&quot;&gt;Short-term plans&lt;/h2&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;Under 3 years&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;plan-list&quot; id=&quot;short-plans&quot;&gt;&lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section class=&quot;card goal-card&quot; aria-labelledby=&quot;long-plans-title&quot;&gt;
-        &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;long-plans-title&quot;&gt;Long-term plans&lt;/h2&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;3+ years&lt;/span&gt;&lt;/div&gt;
-        &lt;div class=&quot;plan-list&quot; id=&quot;long-plans&quot;&gt;&lt;/div&gt;
-      &lt;/section&gt;
-    &lt;/aside&gt;
-  &lt;/div&gt;
-
-  &lt;section class=&quot;add-panel&quot; aria-labelledby=&quot;add-title&quot;&gt;
-    &lt;div class=&quot;card&quot;&gt;
-      &lt;div class=&quot;section-head&quot;&gt;&lt;h2 id=&quot;add-title&quot;&gt;Add a transaction&lt;/h2&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;Savings asks for the product and purpose&lt;/span&gt;&lt;/div&gt;
-      &lt;form class=&quot;transaction-form&quot; id=&quot;transaction-form&quot;&gt;
-        &lt;label class=&quot;form-label&quot;&gt;What was it?&lt;input class=&quot;form-control&quot; id=&quot;tx-name&quot; required placeholder=&quot;e.g. Laptop purchase&quot;&gt;&lt;/label&gt;
-        &lt;label class=&quot;form-label&quot;&gt;Amount&lt;input class=&quot;form-control&quot; id=&quot;tx-amount&quot; required type=&quot;number&quot; min=&quot;1&quot; step=&quot;1&quot; placeholder=&quot;0&quot;&gt;&lt;/label&gt;
-        &lt;label class=&quot;form-label&quot;&gt;Type&lt;select class=&quot;form-select&quot; id=&quot;tx-type&quot;&gt;&lt;option value=&quot;expense&quot;&gt;Expense&lt;/option&gt;&lt;option value=&quot;income&quot;&gt;Income&lt;/option&gt;&lt;option value=&quot;investment&quot;&gt;Investment&lt;/option&gt;&lt;option value=&quot;saving&quot;&gt;Savings&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
-        &lt;label class=&quot;form-label&quot;&gt;Category&lt;select class=&quot;form-select&quot; id=&quot;tx-category&quot;&gt;&lt;option&gt;Home &amp; bills&lt;/option&gt;&lt;option&gt;Food &amp; coffee&lt;/option&gt;&lt;option&gt;Travel&lt;/option&gt;&lt;option&gt;Tech &amp; gadgets&lt;/option&gt;&lt;option&gt;FD withdrawal&lt;/option&gt;&lt;option&gt;SIP / investment&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
-        &lt;div class=&quot;saving-fields&quot; id=&quot;saving-fields&quot; aria-live=&quot;polite&quot;&gt;
-          &lt;label class=&quot;form-label&quot;&gt;Saving in&lt;select class=&quot;form-select&quot; id=&quot;saving-product&quot;&gt;&lt;option value=&quot;RD&quot;&gt;RD&lt;/option&gt;&lt;option value=&quot;FD&quot;&gt;FD&lt;/option&gt;&lt;option value=&quot;Bank savings&quot;&gt;Bank savings&lt;/option&gt;&lt;option value=&quot;Other&quot;&gt;Other&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
-          &lt;label class=&quot;form-label&quot;&gt;Purpose&lt;input class=&quot;form-control&quot; id=&quot;saving-purpose&quot; placeholder=&quot;e.g. Emergency fund&quot;&gt;&lt;/label&gt;
-          &lt;label class=&quot;form-label&quot;&gt;Plan horizon&lt;select class=&quot;form-select&quot; id=&quot;plan-horizon&quot;&gt;&lt;option value=&quot;short&quot;&gt;Short term — under 3 years&lt;/option&gt;&lt;option value=&quot;long&quot;&gt;Long term — 3+ years&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
-        &lt;/div&gt;
-        &lt;button class=&quot;btn btn-primary&quot; type=&quot;submit&quot;&gt;&lt;i data-lucide=&quot;plus&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Add&lt;/button&gt;
-      &lt;/form&gt;
-    &lt;/div&gt;
-  &lt;/section&gt;
-
-  &lt;script&gt;
-    (() =&gt; {
-      const root = document.getElementById(&#x27;finance-compass&#x27;);
-      const fmt = n =&gt; &#x27;₹&#x27; + new Intl.NumberFormat(&#x27;en-IN&#x27;).format(n);
-      let state = { savings: 161450, spent: 38750, invested: 20000, goal: 45000, goalTarget: 80000, done: false, plans: [
-        { purpose:&#x27;Laptop upgrade&#x27;, product:&#x27;RD&#x27;, horizon:&#x27;short&#x27;, amount:45000 },
-        { purpose:&#x27;Emergency fund&#x27;, product:&#x27;FD&#x27;, horizon:&#x27;short&#x27;, amount:60000 },
-        { purpose:&#x27;Home down payment&#x27;, product:&#x27;RD&#x27;, horizon:&#x27;long&#x27;, amount:120000 }
-      ], entries: [
-        {name:&#x27;SIP — Nifty 50 index fund&#x27;, category:&#x27;Investment&#x27;, amount:10000, type:&#x27;investment&#x27;},
-        {name:&#x27;Rent — HSR Layout&#x27;, category:&#x27;Home &amp; bills&#x27;, amount:14500, type:&#x27;expense&#x27;},
-        {name:&#x27;FD maturity credited&#x27;, category:&#x27;FD withdrawal&#x27;, amount:50000, type:&#x27;income&#x27;},
-        {name:&#x27;Groceries &amp; weekend meals&#x27;, category:&#x27;Food &amp; coffee&#x27;, amount:2980, type:&#x27;expense&#x27;}
-      ]};
-      try { const saved = localStorage.getItem(&#x27;finance-compass-state&#x27;); if (saved) state = JSON.parse(saved); } catch (_) {}
-      if (!Array.isArray(state.plans)) state.plans = [];
-      const el = id =&gt; root.querySelector(&#x27;#&#x27; + id);
-      const save = () =&gt; { try { localStorage.setItem(&#x27;finance-compass-state&#x27;, JSON.stringify(state)); } catch (_) {} };
-      function render() {
-        el(&#x27;savings&#x27;).textContent = fmt(state.savings); el(&#x27;spent&#x27;).textContent = fmt(state.spent); el(&#x27;invested&#x27;).textContent = fmt(state.invested);
-        el(&#x27;spent-note&#x27;).textContent = &#x27;of &#x27; + fmt(55000) + &#x27; comfort limit&#x27;;
-        const pct = Math.min(100, Math.round(state.goal / state.goalTarget * 100));
-        el(&#x27;goal-bar&#x27;).style.width = pct + &#x27;%&#x27;; el(&#x27;goal-amount&#x27;).textContent = fmt(state.goal) + &#x27; of &#x27; + fmt(state.goalTarget); el(&#x27;goal-percent&#x27;).textContent = pct + &#x27;%&#x27;;
-        el(&#x27;goal-status&#x27;).textContent = state.done ? &#x27;Completed&#x27; : pct &gt;= 50 ? &#x27;On track&#x27; : &#x27;Building&#x27;;
-        el(&#x27;complete-goal&#x27;).textContent = state.done ? &#x27;Completed&#x27; : &#x27;Mark done&#x27;; el(&#x27;complete-goal&#x27;).disabled = state.done;
-        el(&#x27;activity-count&#x27;).textContent = state.entries.length + (state.entries.length === 1 ? &#x27; entry&#x27; : &#x27; entries&#x27;);
-        el(&#x27;ledger&#x27;).innerHTML = state.entries.slice(0,6).map(t =&gt; &#x27;&lt;div class=&quot;ledger-row&quot;&gt;&lt;div&gt;&lt;span class=&quot;transaction-name&quot;&gt;&#x27; + safe(t.name) + &#x27;&lt;/span&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;&#x27; + safe(t.category) + &#x27;&lt;/span&gt;&lt;/div&gt;&lt;span class=&quot;amount &#x27; + (t.type === &#x27;income&#x27; ? &#x27;in&#x27; : &#x27;out&#x27;) + &#x27;&quot;&gt;&#x27; + (t.type === &#x27;income&#x27; ? &#x27;+&#x27; : &#x27;−&#x27;) + fmt(t.amount) + &#x27;&lt;/span&gt;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
-        renderPlans(&#x27;short-plans&#x27;, &#x27;short&#x27;); renderPlans(&#x27;long-plans&#x27;, &#x27;long&#x27;);
-      }
-      function renderPlans(id, horizon) { const plans = state.plans.filter(p =&gt; p.horizon === horizon); el(id).innerHTML = plans.length ? plans.map(p =&gt; &#x27;&lt;div class=&quot;plan-item&quot;&gt;&lt;span class=&quot;transaction-name&quot;&gt;&#x27; + safe(p.purpose) + &#x27;&lt;/span&gt;&lt;div class=&quot;plan-meta&quot;&gt;&lt;span class=&quot;text-small text-muted&quot;&gt;&#x27; + safe(p.product) + &#x27;&lt;/span&gt;&lt;span class=&quot;text-small&quot;&gt;&#x27; + fmt(p.amount) + &#x27;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&#x27;).join(&#x27;&#x27;) : &#x27;&lt;div class=&quot;text-small text-muted&quot;&gt;No plans yet&lt;/div&gt;&#x27;; }
-      function safe(s) { const d = document.createElement(&#x27;div&#x27;); d.textContent = s; return d.innerHTML; }
-      function toggleSavingFields() { const saving = el(&#x27;tx-type&#x27;).value === &#x27;saving&#x27;; el(&#x27;saving-fields&#x27;).classList.toggle(&#x27;is-visible&#x27;, saving); el(&#x27;saving-purpose&#x27;).required = saving; }
-      el(&#x27;tx-type&#x27;).addEventListener(&#x27;change&#x27;, toggleSavingFields);
-      el(&#x27;transaction-form&#x27;).addEventListener(&#x27;submit&#x27;, e =&gt; { e.preventDefault(); const name = el(&#x27;tx-name&#x27;).value.trim(), amount = Number(el(&#x27;tx-amount&#x27;).value), type = el(&#x27;tx-type&#x27;).value, category = el(&#x27;tx-category&#x27;).value, purpose = el(&#x27;saving-purpose&#x27;).value.trim(); if (!name || !amount || (type === &#x27;saving&#x27; &amp;&amp; !purpose)) return; let entryCategory = category; if (type === &#x27;saving&#x27;) { const product = el(&#x27;saving-product&#x27;).value, horizon = el(&#x27;plan-horizon&#x27;).value; entryCategory = product + &#x27; · &#x27; + purpose; const existing = state.plans.find(p =&gt; p.purpose.toLowerCase() === purpose.toLowerCase() &amp;&amp; p.product === product &amp;&amp; p.horizon === horizon); if (existing) existing.amount += amount; else state.plans.push({ purpose, product, horizon, amount }); } state.entries.unshift({name, amount, type, category:entryCategory}); if (type === &#x27;income&#x27;) state.savings += amount; else if (type === &#x27;investment&#x27;) { state.savings -= amount; state.invested += amount; } else if (type === &#x27;saving&#x27;) state.savings -= amount; else { state.savings -= amount; state.spent += amount; } save(); render(); e.target.reset(); toggleSavingFields(); });
-      el(&#x27;contribute&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { if (state.savings &gt;= 5000 &amp;&amp; !state.done) { state.savings -= 5000; state.goal += 5000; save(); render(); } });
-      el(&#x27;complete-goal&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; { state.done = true; save(); render(); });
-      render();
-    })();
-  &lt;/script&gt;
-&lt;/section&gt;
-
-&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-(() =&gt; {
-  if (window.FloatingUIDOM == null) {
-    return;
-  }
-  const { autoUpdate, computePosition, flip, offset, shift, size } =
-    window.FloatingUIDOM;
-  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
-  const tooltipId = `codex-visualization-tooltip-${
-    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
-  }`;
-  const tooltipGap = 5;
-  const hoverDelay = 700;
-  const skipDelay = 300;
-  let activeTrigger = null;
-  let pendingTrigger = null;
-  let tooltip = null;
-  let openTimeout = null;
-  let autoUpdateCleanup = null;
-  let positionRequest = 0;
-  let skipDelayUntil = 0;
-
-  const getTrigger = (target) =&gt;
-    target?.nodeType === Node.ELEMENT_NODE
-      ? target.closest(&quot;[data-tooltip]&quot;)
-      : null;
-  const containsTarget = (trigger, target) =&gt;
-    target?.nodeType != null &amp;&amp; trigger.contains(target);
-  const getContent = (trigger) =&gt;
-    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
-  const getPlacement = (trigger) =&gt; {
-    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
-    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
-  };
-  const getTooltip = () =&gt; {
-    if (tooltip == null) {
-      tooltip = document.createElement(&quot;div&quot;);
-      tooltip.id = tooltipId;
-      tooltip.className = &quot;tooltip&quot;;
-      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
-    }
-    return tooltip;
-  };
-  const setDescribedBy = (trigger, described) =&gt; {
-    const ids = new Set(
-      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
-        .split(/\s+/)
-        .filter(Boolean),
-    );
-    if (described) {
-      ids.add(tooltipId);
-    } else {
-      ids.delete(tooltipId);
-    }
-    if (ids.size === 0) {
-      trigger.removeAttribute(&quot;aria-describedby&quot;);
-    } else {
-      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
-    }
-  };
-  const clearOpenTimeout = () =&gt; {
-    if (openTimeout != null) {
-      window.clearTimeout(openTimeout);
-      openTimeout = null;
-    }
-    pendingTrigger = null;
-  };
-  const closeTooltip = (activateSkipDelay = true) =&gt; {
-    clearOpenTimeout();
-    positionRequest += 1;
-    autoUpdateCleanup?.();
-    autoUpdateCleanup = null;
-    if (activeTrigger == null) {
-      return;
-    }
-    setDescribedBy(activeTrigger, false);
-    activeTrigger = null;
-    tooltip?.remove();
-    if (activateSkipDelay) {
-      skipDelayUntil = Date.now() + skipDelay;
-    }
-  };
-  const updatePosition = (trigger, floating) =&gt; {
-    const request = ++positionRequest;
-    void computePosition(trigger, floating, {
-      middleware: [
-        offset(tooltipGap),
-        flip({ padding: tooltipGap }),
-        shift({ padding: tooltipGap }),
-        size({
-          padding: tooltipGap,
-          apply({ availableHeight, availableWidth, elements }) {
-            elements.floating.style.setProperty(
-              &quot;--tooltip-available-width&quot;,
-              `${Math.max(0, availableWidth)}px`,
-            );
-            elements.floating.style.setProperty(
-              &quot;--tooltip-available-height&quot;,
-              `${Math.max(0, availableHeight)}px`,
-            );
-          },
-        }),
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">₹</span>Finance Compass</div>
+      <div class="month" id="period-label"></div>
+    </header>
+
+    <section class="card auth" aria-label="Cloud sync">
+      <div class="card-title"><h2>Sync your finance data</h2><span class="status" id="auth-status">Not signed in — saved on this device</span></div>
+      <div class="auth-body" id="signed-out">
+        <div class="field"><label for="auth-email">Email</label><input class="input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email"></div>
+        <button class="button primary" id="sign-in" type="button">Send secure sign-in link</button>
+      </div>
+      <div class="auth-body hidden" id="signed-in"><span class="status">Your data is private and synced to your account.</span><button class="button ghost" id="sign-out" type="button">Sign out</button></div>
+      <div class="notice hidden" id="config-notice">Add your Supabase Publishable key in the configuration section of this file to enable cloud sync.</div>
+    </section>
+
+    <section class="stats" aria-label="Finance summary">
+      <div class="card"><span class="stat-label">Available savings</span><strong class="stat-value" id="savings-total">₹0</strong><span class="stat-label">ready to spend or save</span></div>
+      <div class="card"><span class="stat-label">Spent this month</span><strong class="stat-value" id="spent-total">₹0</strong><span class="stat-label">your monthly outgo</span></div>
+      <div class="card"><span class="stat-label">Invested this month</span><strong class="stat-value positive" id="invested-total">₹0</strong><span class="stat-label">SIP and other investments</span></div>
+    </section>
+
+    <section class="dashboard">
+      <div class="column">
+        <section class="card">
+          <div class="card-title"><h2>Daily spending</h2><span class="eyebrow">Last 7 days</span></div>
+          <div class="chart" id="spending-chart" aria-label="Last seven days spending chart"></div>
+          <div class="chart-total" id="chart-total"></div>
+        </section>
+        <section class="card">
+          <div class="card-title"><h2>Recent activity</h2><span class="eyebrow" id="activity-count"></span></div>
+          <div class="activity" id="activity-list"></div>
+        </section>
+      </div>
+      <aside class="column">
+        <section class="card">
+          <div class="card-title"><h2>Short-term plans</h2><span class="eyebrow">Under 3 years</span></div>
+          <div class="plan-group" id="short-plans"></div>
+        </section>
+        <section class="card">
+          <div class="card-title"><h2>Long-term plans</h2><span class="eyebrow">3+ years</span></div>
+          <div class="plan-group" id="long-plans"></div>
+        </section>
+        <section class="card">
+          <div class="card-title"><h2>Short goal</h2><span class="pill" id="goal-state">On track</span></div>
+          <div class="plan-name" id="goal-name">Laptop fund</div>
+          <div class="goal-progress"><span id="goal-progress"></span></div>
+          <div class="goal-footer"><span id="goal-value"></span><span id="goal-percent"></span></div>
+          <div class="goal-actions"><button class="button secondary" id="goal-add" type="button">Add ₹5,000</button><button class="button ghost" id="goal-done" type="button">Mark done</button></div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="card form-card">
+      <div class="card-title"><h2>Add a transaction</h2><p class="form-note">Choose Savings to record an RD, FD, or another planned saving.</p></div>
+      <form class="form-grid" id="transaction-form">
+        <div class="field"><label for="tx-name">What was it?</label><input class="input" id="tx-name" required placeholder="e.g. Laptop purchase"></div>
+        <div class="field"><label for="tx-amount">Amount</label><input class="input" id="tx-amount" required type="number" min="1" step="1" placeholder="0"></div>
+        <div class="field"><label for="tx-type">Type</label><select class="select" id="tx-type"><option value="expense">Expense</option><option value="income">Income</option><option value="investment">Investment</option><option value="saving">Savings</option></select></div>
+        <div class="field"><label for="tx-category">Category</label><select class="select" id="tx-category"><option>Home &amp; bills</option><option>Food &amp; coffee</option><option>Travel</option><option>Tech &amp; gadgets</option><option>FD withdrawal</option><option>SIP / investment</option></select></div>
+        <button class="button primary" type="submit">Add transaction</button>
+        <div class="saving-options" id="saving-options">
+          <div class="field"><label for="saving-product">Saving in</label><select class="select" id="saving-product"><option value="RD">RD</option><option value="FD">FD</option><option value="Bank savings">Bank savings</option><option value="Other">Other</option></select></div>
+          <div class="field"><label for="saving-purpose">Purpose</label><input class="input" id="saving-purpose" placeholder="e.g. Emergency fund"></div>
+          <div class="field"><label for="plan-horizon">Plan horizon</label><select class="select" id="plan-horizon"><option value="short">Short term — under 3 years</option><option value="long">Long term — 3+ years</option></select></div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    /* ===== SUPABASE CONFIGURATION =====
+       Paste only your Publishable key below. Never use a secret/service_role key. */
+    const SUPABASE_URL = 'https://xdtzuqaypgkzhihdwklm.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_q6eELa_XMGmzccms9lm_wg_MFUxNN_e';
+
+    const defaultState = {
+      savings: 161450, spent: 38750, invested: 20000,
+      goal: { name: 'Laptop fund', amount: 45000, target: 80000, done: false },
+      plans: [
+        { purpose: 'Emergency fund', product: 'FD', horizon: 'short', amount: 60000 },
+        { purpose: 'Home down payment', product: 'RD', horizon: 'long', amount: 120000 }
       ],
-      placement: getPlacement(trigger),
-      strategy: &quot;fixed&quot;,
-    })
-      .then(({ x, y }) =&gt; {
-        if (activeTrigger !== trigger || request !== positionRequest) {
-          return;
-        }
-        const scale = window.devicePixelRatio || 1;
-        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
-        floating.style.visibility = &quot;visible&quot;;
-      })
-      .catch(() =&gt; {
-        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
-          closeTooltip(false);
-        }
-      });
-  };
-  const openTooltip = (trigger) =&gt; {
-    const content = getContent(trigger);
-    if (!trigger.isConnected || content.length === 0) {
-      return;
+      entries: [
+        { name: 'SIP — Nifty 50 index fund', category: 'Investment', amount: 10000, type: 'investment', date: '2026-07-16' },
+        { name: 'Rent — HSR Layout', category: 'Home & bills', amount: 14500, type: 'expense', date: '2026-07-15' },
+        { name: 'FD maturity credited', category: 'FD withdrawal', amount: 50000, type: 'income', date: '2026-07-14' },
+        { name: 'Groceries & weekend meals', category: 'Food & coffee', amount: 2980, type: 'expense', date: '2026-07-13' }
+      ]
+    };
+
+    const $ = id => document.getElementById(id);
+    const money = value => '₹' + new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value || 0);
+    const escapeHtml = value => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const copyState = value => JSON.parse(JSON.stringify(value));
+    let state = copyState(defaultState);
+    let supabase = null;
+
+    try { const local = localStorage.getItem('finance-compass-state'); if (local) state = JSON.parse(local); } catch (_) {}
+    if (!Array.isArray(state.plans)) state.plans = [];
+    if (!state.goal || typeof state.goal !== 'object') state.goal = copyState(defaultState.goal);
+    if (!Array.isArray(state.entries)) state.entries = [];
+
+    function render() {
+      $('period-label').textContent = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date());
+      $('savings-total').textContent = money(state.savings);
+      $('spent-total').textContent = money(state.spent);
+      $('invested-total').textContent = money(state.invested);
+      $('activity-count').textContent = state.entries.length + (state.entries.length === 1 ? ' entry' : ' entries');
+      renderActivity(); renderPlans('short-plans', 'short'); renderPlans('long-plans', 'long'); renderGoal(); renderChart();
     }
-    clearOpenTimeout();
-    if (activeTrigger === trigger) {
-      return;
+
+    function renderActivity() {
+      $('activity-list').innerHTML = state.entries.slice(0, 6).map(entry => {
+        const isIncome = entry.type === 'income';
+        return `<div class="activity-row"><div><span class="activity-name">${escapeHtml(entry.name)}</span><span class="activity-meta">${escapeHtml(entry.category)}</span></div><span class="amount ${isIncome ? 'income' : 'out'}">${isIncome ? '+' : '−'}${money(entry.amount)}</span></div>`;
+      }).join('') || '<div class="empty">No transactions yet.</div>';
     }
-    closeTooltip();
-    const floating = getTooltip();
-    floating.textContent = content;
-    floating.style.visibility = &quot;hidden&quot;;
-    floating.style.transform = &quot;translate(0, 0)&quot;;
-    document.body.appendChild(floating);
-    activeTrigger = trigger;
-    setDescribedBy(trigger, true);
-    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
-      updatePosition(trigger, floating);
+
+    function renderPlans(id, horizon) {
+      const plans = state.plans.filter(plan => plan.horizon === horizon);
+      $(id).innerHTML = plans.length ? plans.map(plan => `<div class="plan-row"><div class="plan-head"><span class="plan-name">${escapeHtml(plan.purpose)}</span><span class="pill">${escapeHtml(plan.product)}</span></div><div class="plan-meta"><span>${horizon === 'short' ? 'Short-term saving' : 'Long-term saving'}</span><strong>${money(plan.amount)}</strong></div></div>`).join('') : '<div class="empty">No plans yet.</div>';
+    }
+
+    function renderGoal() {
+      const goal = state.goal, percent = Math.min(100, Math.round(goal.amount / goal.target * 100));
+      $('goal-name').textContent = goal.name; $('goal-progress').style.width = percent + '%'; $('goal-value').textContent = `${money(goal.amount)} of ${money(goal.target)}`; $('goal-percent').textContent = percent + '%';
+      $('goal-state').textContent = goal.done ? 'Completed' : percent >= 50 ? 'On track' : 'Building';
+      $('goal-done').textContent = goal.done ? 'Completed' : 'Mark done'; $('goal-done').disabled = goal.done;
+    }
+
+    function renderChart() {
+      const data = [2400, 5100, 1900, 8750, 3200, 6400, 2980], labels = ['10', '11', '12', '13', '14', '15', '16'];
+      const max = Math.max(...data); $('spending-chart').innerHTML = data.map((amount, i) => `<div class="bar-col"><div class="bar" style="height:${Math.max(5, amount / max * 100)}%"></div><span>${labels[i]}</span></div>`).join('');
+      $('chart-total').textContent = `₹${new Intl.NumberFormat('en-IN').format(data.reduce((a, b) => a + b, 0))} spent over the last 7 days`;
+    }
+
+    async function save() {
+      localStorage.setItem('finance-compass-state', JSON.stringify(state));
+      if (!supabase) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { error } = await supabase.from('finance_states').upsert({ user_id: user.id, state, updated_at: new Date().toISOString() });
+      if (error) $('auth-status').textContent = 'Sync issue: ' + error.message;
+    }
+
+    async function updateAuthUi() {
+      if (!supabase) { $('config-notice').classList.remove('hidden'); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      const signedIn = Boolean(user); $('signed-out').classList.toggle('hidden', signedIn); $('signed-in').classList.toggle('hidden', !signedIn);
+      $('auth-status').textContent = signedIn ? `${user.email} · synced` : 'Not signed in — saved on this device';
+      if (signedIn) await loadCloudState(user);
+    }
+
+    async function loadCloudState(user) {
+      const { data, error } = await supabase.from('finance_states').select('state').eq('user_id', user.id).maybeSingle();
+      if (error) { $('auth-status').textContent = 'Could not load cloud data'; return; }
+      if (data && data.state) { state = data.state; if (!Array.isArray(state.plans)) state.plans = []; if (!state.goal) state.goal = copyState(defaultState.goal); render(); }
+      else await save();
+    }
+
+    function enableSupabase() {
+      if (SUPABASE_PUBLISHABLE_KEY === 'PASTE_YOUR_PUBLISHABLE_KEY_HERE') return;
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      supabase.auth.onAuthStateChange((_event, session) => { if (session) updateAuthUi(); });
+    }
+
+    $('tx-type').addEventListener('change', () => { const saving = $('tx-type').value === 'saving'; $('saving-options').classList.toggle('show', saving); $('saving-purpose').required = saving; });
+    $('transaction-form').addEventListener('submit', event => {
+      event.preventDefault(); const name = $('tx-name').value.trim(), amount = Number($('tx-amount').value), type = $('tx-type').value;
+      if (!name || !amount) return; let category = $('tx-category').value;
+      if (type === 'saving') { const purpose = $('saving-purpose').value.trim(), product = $('saving-product').value, horizon = $('plan-horizon').value; if (!purpose) return; category = `${product} · ${purpose}`; const plan = state.plans.find(p => p.purpose.toLowerCase() === purpose.toLowerCase() && p.product === product && p.horizon === horizon); if (plan) plan.amount += amount; else state.plans.push({ purpose, product, horizon, amount }); state.savings -= amount; }
+      else if (type === 'income') state.savings += amount;
+      else if (type === 'investment') { state.savings -= amount; state.invested += amount; }
+      else { state.savings -= amount; state.spent += amount; }
+      state.entries.unshift({ name, amount, type, category, date: new Date().toISOString().slice(0, 10) }); event.target.reset(); $('saving-options').classList.remove('show'); $('saving-purpose').required = false; save(); render();
     });
-  };
-  const requestOpen = (trigger, immediate = false) =&gt; {
-    if (
-      getContent(trigger).length === 0 ||
-      activeTrigger === trigger ||
-      pendingTrigger === trigger
-    ) {
-      return;
-    }
-    clearOpenTimeout();
-    pendingTrigger = trigger;
-    const delay =
-      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
-        ? 0
-        : hoverDelay;
-    if (delay === 0) {
-      openTooltip(trigger);
-      return;
-    }
-    openTimeout = window.setTimeout(() =&gt; {
-      openTimeout = null;
-      pendingTrigger = null;
-      openTooltip(trigger);
-    }, delay);
-  };
-  const handlePointerOpen = (event) =&gt; {
-    if (event.pointerType === &quot;touch&quot;) {
-      return;
-    }
-    const trigger = getTrigger(event.target);
-    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
-      return;
-    }
-    requestOpen(trigger);
-  };
-  const handleLeave = (event) =&gt; {
-    const trigger = getTrigger(event.target);
-    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
-      return;
-    }
-    if (activeTrigger === trigger || pendingTrigger === trigger) {
-      closeTooltip();
-    }
-  };
-  const handleFocusIn = (event) =&gt; {
-    const trigger = getTrigger(event.target);
-    if (trigger?.matches(&quot;:focus-visible&quot;)) {
-      requestOpen(trigger, true);
-    }
-  };
-  const handleKeyDown = (event) =&gt; {
-    if (event.key === &quot;Escape&quot;) {
-      closeTooltip();
-    }
-  };
-  const handleContextMenu = (event) =&gt; {
-    const trigger = getTrigger(event.target);
-    if (activeTrigger === trigger || pendingTrigger === trigger) {
-      closeTooltip();
-    }
-  };
-  const destroy = () =&gt; {
-    closeTooltip(false);
-    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
-    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
-    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
-    document.removeEventListener(&quot;focusout&quot;, handleLeave);
-    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
-    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
-    tooltip = null;
-  };
+    $('goal-add').addEventListener('click', () => { if (!state.goal.done && state.savings >= 5000) { state.savings -= 5000; state.goal.amount += 5000; save(); render(); } });
+    $('goal-done').addEventListener('click', () => { state.goal.done = true; save(); render(); });
+    $('sign-in').addEventListener('click', async () => { const email = $('auth-email').value.trim(); if (!email) { $('auth-status').textContent = 'Enter your email first'; return; } if (!supabase) return; const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } }); $('auth-status').textContent = error ? error.message : 'Check your email for the secure sign-in link'; });
+    $('sign-out').addEventListener('click', async () => { if (supabase) await supabase.auth.signOut(); updateAuthUi(); });
 
-  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
-  document.addEventListener(&quot;pointerout&quot;, handleLeave);
-  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
-  document.addEventListener(&quot;focusout&quot;, handleLeave);
-  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
-  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
-  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
-})();
-&lt;/script&gt;
-&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-(() =&gt; {
-  const initialize = () =&gt; {
-    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
-  };
-  if (globalThis.lucide != null) {
-    initialize();
-    return;
-  }
-  document
-    .getElementById(&quot;codex-visualization-lucide&quot;)
-    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
-})();
-&lt;/script&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-"></iframe>
+    enableSupabase(); render(); updateAuthUi();
+  </script>
 </body>
 </html>
