@@ -10,7 +10,8 @@
     :root { --ink:#13211c; --muted:#65736d; --line:#dce4df; --paper:#f6f8f5; --card:#fff; --forest:#123629; --mint:#dff3e8; --soft:#edf2ee; --red:#b34134; --gold:#a66b08; --radius:18px; }
     * { box-sizing:border-box; } body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
     button, input, select { font:inherit; } button { cursor:pointer; } .app { max-width:1180px; margin:auto; padding:28px 20px 48px; }
-    .topbar { display:flex; justify-content:space-between; gap:18px; align-items:center; margin-bottom:26px; } .brand { display:flex; align-items:center; gap:11px; font-size:20px; font-weight:750; letter-spacing:-.02em; }
+    .auth-page { min-height:100vh; display:grid; place-items:center; padding:22px; background:linear-gradient(135deg, #eff7f1, #f7f8f6); }.login-card { width:min(100%, 430px); padding:30px; }.login-card h1 { margin:12px 0 6px; font-size:29px; letter-spacing:-.04em; }.login-card p { margin:0 0 24px; color:var(--muted); }.login-card .field { margin-bottom:13px; }.login-actions { display:grid; gap:10px; margin-top:20px; }.login-actions .button { width:100%; }.auth-feedback { min-height:22px; margin-top:14px; color:var(--red); font-size:13px; }.auth-note { margin-top:18px; color:var(--muted); font-size:12px; text-align:center; }
+    .topbar { display:flex; justify-content:space-between; gap:18px; align-items:center; margin-bottom:26px; } .brand { display:flex; align-items:center; gap:11px; font-size:20px; font-weight:750; letter-spacing:-.02em; }.topbar-right { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }.nav { display:flex; gap:5px; }.nav-link { border:0; border-radius:9px; padding:7px 10px; color:var(--muted); background:transparent; font-weight:650; }.nav-link.active { color:var(--forest); background:var(--mint); }
     .brand-mark { display:grid; place-items:center; width:39px; height:39px; color:#fff; background:var(--forest); border-radius:13px; font-size:20px; }
     .month { color:var(--muted); font-size:14px; }.card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; box-shadow:0 1px 1px rgba(19,33,28,.02); }
     .stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:18px; }.stat-label, .eyebrow { color:var(--muted); font-size:13px; }.stat-value { display:block; margin:7px 0 2px; font-size:27px; line-height:1; letter-spacing:-.045em; }.positive { color:var(--forest); }
@@ -19,28 +20,32 @@
     .auth { background:var(--mint); border-color:#c9e8d5; }.auth-body { display:flex; align-items:end; gap:10px; flex-wrap:wrap; }.field { display:grid; gap:6px; flex:1 1 180px; }.field label { font-size:13px; font-weight:650; }.input, .select { width:100%; min-height:41px; border:1px solid #c8d2cc; background:#fff; border-radius:10px; padding:0 11px; color:var(--ink); }.button { min-height:41px; border:0; border-radius:10px; padding:0 14px; font-weight:700; }.button.primary { color:#fff; background:var(--forest); }.button.secondary { color:var(--forest); background:#fff; border:1px solid #bcd7c6; }.button.ghost { color:var(--muted); background:transparent; padding:0; min-height:auto; }.status { font-size:13px; color:var(--muted); }
     .plan-group { display:grid; gap:9px; }.plan-row { padding:12px 0; border-top:1px solid var(--line); }.plan-row:first-child { border-top:0; padding-top:0; }.plan-head, .plan-meta { display:flex; justify-content:space-between; gap:12px; }.plan-name { font-weight:650; }.pill { font-size:12px; color:#345546; background:var(--mint); border-radius:999px; padding:3px 8px; white-space:nowrap; }.plan-meta { margin-top:4px; color:var(--muted); font-size:13px; }
     .goal-progress { margin:12px 0 7px; height:9px; overflow:hidden; border-radius:99px; background:var(--soft); }.goal-progress span { display:block; height:100%; background:var(--forest); border-radius:inherit; transition:width .25s ease; }.goal-footer { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }.goal-actions { display:flex; gap:9px; margin-top:15px; }
-    .form-card { margin-top:18px; }.form-grid { display:grid; grid-template-columns:1.3fr .75fr .8fr 1fr auto; gap:10px; align-items:end; }.saving-options { display:none; grid-column:1 / -1; grid-template-columns:repeat(3, 1fr); gap:10px; padding-top:3px; }.saving-options.show { display:grid; }.form-note { color:var(--muted); font-size:13px; margin:0; }
+    .form-card { margin-top:18px; }.form-grid { display:grid; grid-template-columns:1.25fr .7fr .86fr .8fr 1fr auto; gap:10px; align-items:end; }.saving-options { display:none; grid-column:1 / -1; grid-template-columns:repeat(3, 1fr); gap:10px; padding-top:3px; }.saving-options.show { display:grid; }.form-note { color:var(--muted); font-size:13px; margin:0; }
+    .table-wrap { overflow-x:auto; }.history-table { width:100%; border-collapse:collapse; text-align:left; }.history-table th { color:var(--muted); font-size:12px; font-weight:650; text-transform:uppercase; letter-spacing:.04em; }.history-table th, .history-table td { padding:13px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }.history-table th:first-child, .history-table td:first-child { padding-left:0; }.history-table th:last-child, .history-table td:last-child { padding-right:0; }.type-tag { display:inline-block; padding:3px 7px; border-radius:999px; color:#345546; background:var(--mint); font-size:12px; font-weight:650; }.delete { color:var(--red); border:0; background:transparent; font-weight:650; }
     .empty { color:var(--muted); font-size:14px; padding:4px 0; }.notice { margin-top:10px; font-size:13px; color:var(--gold); }.hidden { display:none !important; }
     @media (max-width:850px) { .dashboard { grid-template-columns:1fr; } }.topbar { align-items:flex-start; } @media (max-width:620px) { .app { padding:20px 14px 34px; }.stats { grid-template-columns:1fr; }.form-grid, .saving-options { grid-template-columns:1fr 1fr; }.form-grid .button { grid-column:1 / -1; }.saving-options { grid-column:1 / -1; }.stat-value { font-size:25px; } } @media (max-width:390px) { .form-grid, .saving-options { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
-  <main class="app">
+  <section class="auth-page" id="auth-page">
+    <div class="card login-card">
+      <div class="brand"><span class="brand-mark">₹</span>Finance Compass</div>
+      <h1>Your money, clearly.</h1>
+      <p>Sign in to view your private dashboard and keep your data synced.</p>
+      <div class="field"><label for="username">Username</label><input class="input" id="username" autocomplete="username" placeholder="e.g. srivarshan"></div>
+      <div class="field"><label for="password">Password</label><input class="input" id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div>
+      <div class="login-actions"><button class="button primary" id="password-sign-in" type="button">Sign in</button><button class="button secondary" id="create-account" type="button">Create account</button></div>
+      <div class="auth-feedback" id="auth-feedback" role="status"></div>
+      <div class="auth-note">Use a unique password. Your transactions stay private to your account.</div>
+    </div>
+  </section>
+
+  <main class="app hidden" id="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">₹</span>Finance Compass</div>
-      <div class="month" id="period-label"></div>
+      <div class="topbar-right"><nav class="nav" aria-label="Finance navigation"><button class="nav-link active" id="dashboard-link" type="button">Dashboard</button><button class="nav-link" id="transactions-link" type="button">All transactions</button></nav><span class="month" id="period-label"></span><button class="button ghost" id="sign-out" type="button">Log out</button></div>
     </header>
-
-    <section class="card auth" aria-label="Cloud sync">
-      <div class="card-title"><h2>Sync your finance data</h2><span class="status" id="auth-status">Not signed in — saved on this device</span></div>
-      <div class="auth-body" id="signed-out">
-        <div class="field"><label for="auth-email">Email</label><input class="input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email"></div>
-        <button class="button primary" id="sign-in" type="button">Send secure sign-in link</button>
-      </div>
-      <div class="auth-body hidden" id="signed-in"><span class="status">Your data is private and synced to your account.</span><button class="button ghost" id="sign-out" type="button">Sign out</button></div>
-      <div class="notice hidden" id="config-notice">Add your Supabase Publishable key in the configuration section of this file to enable cloud sync.</div>
-    </section>
-
+    <section id="dashboard-page">
     <section class="stats" aria-label="Finance summary">
       <div class="card"><span class="stat-label">Available savings</span><strong class="stat-value" id="savings-total">₹0</strong><span class="stat-label">ready to spend or save</span></div>
       <div class="card"><span class="stat-label">Spent this month</span><strong class="stat-value" id="spent-total">₹0</strong><span class="stat-label">your monthly outgo</span></div>
@@ -83,6 +88,7 @@
       <form class="form-grid" id="transaction-form">
         <div class="field"><label for="tx-name">What was it?</label><input class="input" id="tx-name" required placeholder="e.g. Laptop purchase"></div>
         <div class="field"><label for="tx-amount">Amount</label><input class="input" id="tx-amount" required type="number" min="1" step="1" placeholder="0"></div>
+        <div class="field"><label for="tx-date">Date</label><input class="input" id="tx-date" required type="date"></div>
         <div class="field"><label for="tx-type">Type</label><select class="select" id="tx-type"><option value="expense">Expense</option><option value="income">Income</option><option value="investment">Investment</option><option value="saving">Savings</option></select></div>
         <div class="field"><label for="tx-category">Category</label><select class="select" id="tx-category"><option>Home &amp; bills</option><option>Food &amp; coffee</option><option>Travel</option><option>Tech &amp; gadgets</option><option>FD withdrawal</option><option>SIP / investment</option></select></div>
         <button class="button primary" type="submit">Add transaction</button>
@@ -93,6 +99,12 @@
         </div>
       </form>
     </section>
+    </section>
+
+    <section class="card hidden" id="transactions-page">
+      <div class="card-title"><h2>All transactions</h2><span class="eyebrow" id="transaction-total"></span></div>
+      <div class="table-wrap"><table class="history-table"><thead><tr><th>Date</th><th>Description</th><th>Category / purpose</th><th>Type</th><th>Amount</th><th></th></tr></thead><tbody id="transactions-list"></tbody></table></div>
+    </section>
   </main>
 
   <script>
@@ -102,18 +114,10 @@
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_q6eELa_XMGmzccms9lm_wg_MFUxNN_e';
 
     const defaultState = {
-      savings: 161450, spent: 38750, invested: 20000,
-      goal: { name: 'Laptop fund', amount: 45000, target: 80000, done: false },
-      plans: [
-        { purpose: 'Emergency fund', product: 'FD', horizon: 'short', amount: 60000 },
-        { purpose: 'Home down payment', product: 'RD', horizon: 'long', amount: 120000 }
-      ],
-      entries: [
-        { name: 'SIP — Nifty 50 index fund', category: 'Investment', amount: 10000, type: 'investment', date: '2026-07-16' },
-        { name: 'Rent — HSR Layout', category: 'Home & bills', amount: 14500, type: 'expense', date: '2026-07-15' },
-        { name: 'FD maturity credited', category: 'FD withdrawal', amount: 50000, type: 'income', date: '2026-07-14' },
-        { name: 'Groceries & weekend meals', category: 'Food & coffee', amount: 2980, type: 'expense', date: '2026-07-13' }
-      ]
+      savings: 0, spent: 0, invested: 0,
+      goal: { name: 'Emergency fund', amount: 0, target: 100000, done: false },
+      plans: [],
+      entries: []
     };
 
     const $ = id => document.getElementById(id);
@@ -134,14 +138,21 @@
       $('spent-total').textContent = money(state.spent);
       $('invested-total').textContent = money(state.invested);
       $('activity-count').textContent = state.entries.length + (state.entries.length === 1 ? ' entry' : ' entries');
-      renderActivity(); renderPlans('short-plans', 'short'); renderPlans('long-plans', 'long'); renderGoal(); renderChart();
+      renderActivity(); renderPlans('short-plans', 'short'); renderPlans('long-plans', 'long'); renderGoal(); renderChart(); renderTransactions();
     }
 
     function renderActivity() {
       $('activity-list').innerHTML = state.entries.slice(0, 6).map(entry => {
         const isIncome = entry.type === 'income';
-        return `<div class="activity-row"><div><span class="activity-name">${escapeHtml(entry.name)}</span><span class="activity-meta">${escapeHtml(entry.category)}</span></div><span class="amount ${isIncome ? 'income' : 'out'}">${isIncome ? '+' : '−'}${money(entry.amount)}</span></div>`;
+        return `<div class="activity-row"><div><span class="activity-name">${escapeHtml(entry.name)}</span><span class="activity-meta">${formatDate(entry.date)} · ${escapeHtml(entry.category)}</span></div><span class="amount ${isIncome ? 'income' : 'out'}">${isIncome ? '+' : '−'}${money(entry.amount)}</span></div>`;
       }).join('') || '<div class="empty">No transactions yet.</div>';
+    }
+
+    function formatDate(value) { if (!value) return '—'; const date = new Date(value + 'T00:00:00'); return Number.isNaN(date) ? value : new Intl.DateTimeFormat('en-IN', { day:'numeric', month:'short', year:'numeric' }).format(date); }
+
+    function renderTransactions() {
+      $('transaction-total').textContent = state.entries.length + (state.entries.length === 1 ? ' transaction' : ' transactions');
+      $('transactions-list').innerHTML = state.entries.length ? state.entries.map((entry, index) => `<tr><td>${formatDate(entry.date)}</td><td><strong>${escapeHtml(entry.name)}</strong></td><td>${escapeHtml(entry.category)}</td><td><span class="type-tag">${escapeHtml(entry.type)}</span></td><td class="${entry.type === 'income' ? 'income' : 'out'}"><strong>${entry.type === 'income' ? '+' : '−'}${money(entry.amount)}</strong></td><td><button class="delete" type="button" data-delete-index="${index}">Delete</button></td></tr>`).join('') : '<tr><td colspan="6" class="empty">No transactions yet.</td></tr>';
     }
 
     function renderPlans(id, horizon) {
@@ -157,9 +168,10 @@
     }
 
     function renderChart() {
-      const data = [2400, 5100, 1900, 8750, 3200, 6400, 2980], labels = ['10', '11', '12', '13', '14', '15', '16'];
-      const max = Math.max(...data); $('spending-chart').innerHTML = data.map((amount, i) => `<div class="bar-col"><div class="bar" style="height:${Math.max(5, amount / max * 100)}%"></div><span>${labels[i]}</span></div>`).join('');
-      $('chart-total').textContent = `₹${new Intl.NumberFormat('en-IN').format(data.reduce((a, b) => a + b, 0))} spent over the last 7 days`;
+      const dates = Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setDate(date.getDate() - 6 + index); return date; });
+      const data = dates.map(date => { const key = date.toISOString().slice(0, 10); return state.entries.filter(entry => entry.date === key && entry.type === 'expense').reduce((sum, entry) => sum + Number(entry.amount || 0), 0); });
+      const max = Math.max(1, ...data); $('spending-chart').innerHTML = data.map((amount, i) => `<div class="bar-col"><div class="bar" style="height:${amount ? Math.max(5, amount / max * 100) : 0}%"></div><span>${dates[i].getDate()}</span></div>`).join('');
+      $('chart-total').textContent = `${money(data.reduce((a, b) => a + b, 0))} spent over the last 7 days`;
     }
 
     async function save() {
@@ -171,12 +183,14 @@
       if (error) $('auth-status').textContent = 'Sync issue: ' + error.message;
     }
 
+    function usernameToEmail(username) { return `${username.trim().toLowerCase()}@users.financecompass.app`; }
+    function validUsername(username) { return /^[a-zA-Z0-9._-]{3,30}$/.test(username); }
+
     async function updateAuthUi() {
-      if (!supabaseClient) { $('config-notice').classList.remove('hidden'); return; }
+      if (!supabaseClient) { $('auth-feedback').textContent = 'Supabase is not configured in this file.'; return; }
       const { data: { user } } = await supabaseClient.auth.getUser();
-      const signedIn = Boolean(user); $('signed-out').classList.toggle('hidden', signedIn); $('signed-in').classList.toggle('hidden', !signedIn);
-      $('auth-status').textContent = signedIn ? `${user.email} · synced` : 'Not signed in — saved on this device';
-      if (signedIn) await loadCloudState(user);
+      const signedIn = Boolean(user); $('auth-page').classList.toggle('hidden', signedIn); $('app-shell').classList.toggle('hidden', !signedIn);
+      if (signedIn) { await loadCloudState(user); render(); }
     }
 
     async function loadCloudState(user) {
@@ -187,26 +201,34 @@
     }
 
     function enableSupabase() {
-      if (SUPABASE_PUBLISHABLE_KEY === 'PASTE_YOUR_PUBLISHABLE_KEY_HERE') return;
+      if (SUPABASE_PUBLISHABLE_KEY === 'sb_publishable_q6eELa_XMGmzccms9lm_wg_MFUxNN_e') return;
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-      supabaseClient.auth.onAuthStateChange((_event, session) => { if (session) updateAuthUi(); });
+      supabaseClient.auth.onAuthStateChange(() => { void updateAuthUi(); });
     }
 
     $('tx-type').addEventListener('change', () => { const saving = $('tx-type').value === 'saving'; $('saving-options').classList.toggle('show', saving); $('saving-purpose').required = saving; });
     $('transaction-form').addEventListener('submit', event => {
-      event.preventDefault(); const name = $('tx-name').value.trim(), amount = Number($('tx-amount').value), type = $('tx-type').value;
-      if (!name || !amount) return; let category = $('tx-category').value;
-      if (type === 'saving') { const purpose = $('saving-purpose').value.trim(), product = $('saving-product').value, horizon = $('plan-horizon').value; if (!purpose) return; category = `${product} · ${purpose}`; const plan = state.plans.find(p => p.purpose.toLowerCase() === purpose.toLowerCase() && p.product === product && p.horizon === horizon); if (plan) plan.amount += amount; else state.plans.push({ purpose, product, horizon, amount }); state.savings -= amount; }
+      event.preventDefault(); const name = $('tx-name').value.trim(), amount = Number($('tx-amount').value), type = $('tx-type').value, date = $('tx-date').value;
+      if (!name || !amount || !date) return; let category = $('tx-category').value, savingMeta = null;
+      if (type === 'saving') { const purpose = $('saving-purpose').value.trim(), product = $('saving-product').value, horizon = $('plan-horizon').value; if (!purpose) return; category = `${product} · ${purpose}`; savingMeta = { purpose, product, horizon }; const plan = state.plans.find(p => p.purpose.toLowerCase() === purpose.toLowerCase() && p.product === product && p.horizon === horizon); if (plan) plan.amount += amount; else state.plans.push({ purpose, product, horizon, amount }); state.savings -= amount; }
       else if (type === 'income') state.savings += amount;
       else if (type === 'investment') { state.savings -= amount; state.invested += amount; }
       else { state.savings -= amount; state.spent += amount; }
-      state.entries.unshift({ name, amount, type, category, date: new Date().toISOString().slice(0, 10) }); event.target.reset(); $('saving-options').classList.remove('show'); $('saving-purpose').required = false; save(); render();
+      state.entries.unshift({ name, amount, type, category, date, savingMeta }); event.target.reset(); $('tx-date').value = new Date().toISOString().slice(0, 10); $('saving-options').classList.remove('show'); $('saving-purpose').required = false; save(); render();
     });
     $('goal-add').addEventListener('click', () => { if (!state.goal.done && state.savings >= 5000) { state.savings -= 5000; state.goal.amount += 5000; save(); render(); } });
     $('goal-done').addEventListener('click', () => { state.goal.done = true; save(); render(); });
-    $('sign-in').addEventListener('click', async () => { const email = $('auth-email').value.trim(); if (!email) { $('auth-status').textContent = 'Enter your email first'; return; } if (!supabaseClient) { $('auth-status').textContent = 'Supabase is not configured'; return; } const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } }); $('auth-status').textContent = error ? error.message : 'Check your email for the secure sign-in link'; });
-    $('sign-out').addEventListener('click', async () => { if (supabaseClient) await supabaseClient.auth.signOut(); updateAuthUi(); });
+    $('password-sign-in').addEventListener('click', async () => { const username = $('username').value.trim(), password = $('password').value; if (!supabaseClient) { $('auth-feedback').textContent = 'Supabase is not configured yet.'; return; } if (!validUsername(username) || !password) { $('auth-feedback').textContent = 'Enter your username and password.'; return; } const { error } = await supabaseClient.auth.signInWithPassword({ email: usernameToEmail(username), password }); $('auth-feedback').textContent = error ? 'Sign-in failed. Check your username and password.' : ''; });
+    $('create-account').addEventListener('click', async () => { const username = $('username').value.trim(), password = $('password').value; if (!supabaseClient) { $('auth-feedback').textContent = 'Supabase is not configured yet.'; return; } if (!validUsername(username)) { $('auth-feedback').textContent = 'Username: 3–30 letters, numbers, dots, hyphens, or underscores.'; return; } if (password.length < 6) { $('auth-feedback').textContent = 'Use a password with at least 6 characters.'; return; } const { data, error } = await supabaseClient.auth.signUp({ email: usernameToEmail(username), password, options: { data: { username } } }); $('auth-feedback').textContent = error ? error.message : data.session ? '' : 'Account created. Disable Confirm email in Supabase, then sign in.'; });
+    $('sign-out').addEventListener('click', async () => { await save(); if (supabaseClient) await supabaseClient.auth.signOut(); });
+    $('transactions-list').addEventListener('click', event => { const button = event.target.closest('[data-delete-index]'); if (!button) return; deleteTransaction(Number(button.dataset.deleteIndex)); });
+    $('dashboard-link').addEventListener('click', () => switchPage('dashboard'));
+    $('transactions-link').addEventListener('click', () => switchPage('transactions'));
 
+    function switchPage(page) { const history = page === 'transactions'; $('dashboard-page').classList.toggle('hidden', history); $('transactions-page').classList.toggle('hidden', !history); $('dashboard-link').classList.toggle('active', !history); $('transactions-link').classList.toggle('active', history); }
+    function deleteTransaction(index) { const entry = state.entries[index]; if (!entry) return; if (!window.confirm(`Delete “${entry.name}”?`)) return; state.entries.splice(index, 1); if (entry.type === 'income') state.savings -= entry.amount; else if (entry.type === 'investment') { state.savings += entry.amount; state.invested -= entry.amount; } else if (entry.type === 'saving') { state.savings += entry.amount; if (entry.savingMeta) { const plan = state.plans.find(p => p.purpose === entry.savingMeta.purpose && p.product === entry.savingMeta.product && p.horizon === entry.savingMeta.horizon); if (plan) { plan.amount -= entry.amount; if (plan.amount <= 0) state.plans = state.plans.filter(p => p !== plan); } } } else { state.savings += entry.amount; state.spent -= entry.amount; } save(); render(); }
+
+    $('tx-date').value = new Date().toISOString().slice(0, 10);
     enableSupabase(); render(); updateAuthUi();
   </script>
 </body>
