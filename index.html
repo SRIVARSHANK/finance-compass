@@ -34,9 +34,9 @@
       <p>Sign in to view your private dashboard and keep your data synced.</p>
       <div class="field"><label for="username">Username</label><input class="input" id="username" autocomplete="username" placeholder="e.g. srivarshan"></div>
       <div class="field"><label for="password">Password</label><input class="input" id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div>
-      <div class="login-actions"><button class="button primary" id="password-sign-in" type="button">Sign in</button><button class="button secondary" id="create-account" type="button">Create account</button></div>
+      <div class="login-actions"><button class="button primary" id="password-sign-in" type="button">Sign in</button></div>
       <div class="auth-feedback" id="auth-feedback" role="status"></div>
-      <div class="auth-note">Use a unique password. Your transactions stay private to your account.</div>
+      <div class="auth-note">Your username and password are checked securely by Supabase.</div>
     </div>
   </section>
 
@@ -219,7 +219,6 @@
     $('goal-add').addEventListener('click', () => { if (!state.goal.done && state.savings >= 5000) { state.savings -= 5000; state.goal.amount += 5000; save(); render(); } });
     $('goal-done').addEventListener('click', () => { state.goal.done = true; save(); render(); });
     $('password-sign-in').addEventListener('click', async () => { const username = $('username').value.trim(), password = $('password').value; if (!supabaseClient) { $('auth-feedback').textContent = 'Supabase is not configured yet.'; return; } if (!validUsername(username) || !password) { $('auth-feedback').textContent = 'Enter your username and password.'; return; } const { error } = await supabaseClient.auth.signInWithPassword({ email: usernameToEmail(username), password }); $('auth-feedback').textContent = error ? 'Sign-in failed. Check your username and password.' : ''; });
-    $('create-account').addEventListener('click', async () => { const username = $('username').value.trim(), password = $('password').value; if (!supabaseClient) { $('auth-feedback').textContent = 'Supabase is not configured yet.'; return; } if (!validUsername(username)) { $('auth-feedback').textContent = 'Username: 3–30 letters, numbers, dots, hyphens, or underscores.'; return; } if (password.length < 6) { $('auth-feedback').textContent = 'Use a password with at least 6 characters.'; return; } const { data, error } = await supabaseClient.auth.signUp({ email: usernameToEmail(username), password, options: { data: { username } } }); $('auth-feedback').textContent = error ? error.message : data.session ? '' : 'Account created. Disable Confirm email in Supabase, then sign in.'; });
     $('sign-out').addEventListener('click', async () => { await save(); if (supabaseClient) await supabaseClient.auth.signOut(); });
     $('transactions-list').addEventListener('click', event => { const button = event.target.closest('[data-delete-index]'); if (!button) return; deleteTransaction(Number(button.dataset.deleteIndex)); });
     $('dashboard-link').addEventListener('click', () => switchPage('dashboard'));
